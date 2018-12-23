@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <style>
+        #succ{
+    display:none;
+    color: green;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  #fail{
+    display:none;
+    color: red;
+    font-size: 18px;
+    font-weight: bold;
+  }  
+  </style>
+</head>
+
+<body>
+    <div class="jumbotron text-center">
+        <h1>OPAC Individual File Generator</h1>
+        <h5>Use with KOHA Discovery Layer</h5>
+        <h6>Quickly generate all of the individual files you would normally see in the DL, simply by supplying a single OPAC Config file</h6>
+        <div class="text-center">
+            <form id="uploadForm" name="uploadForm" enctype="multipart/form-data">
+                <label for="uploadFile">Select OPAC Config File</label>
+                <input type="file" name="uploadFile" id="uploadFile">
+            </form>
+            <span id="succ">Files created successfully!</span>
+            <span id="fail">Files NOT created successfully</span>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>Installation/Configuration</h3>
+                <p>Using XAMPP running on localhost, create a folder called opac2files under htdocs</p>
+                <p>Place the 3 files index.html, info.png and create_html_js.php inside of the opac2files folder</p>
+                <p>Copy a opacconfig file to opac2files so you know have 4 files in opac2files folder. Name this opaconfig file something like opac5.json</p>
+                <p>I am using the 5 for opac JSON file because I could have others here as well from earlier or later.</p>
+                <p>Find the entry inside of php.ini that begins with post_max_size= and make this line read post_max_size=900M</p>
+                <p>I think 900M ( megabytes ) is large enough but I might be wrong for your code.</p>
+                <p>Restart the Apache module using the Control Panel or do it manually.</p>
+                <p>Browse to http://localhost/opac2files/index.html and you will see this text.</p>
+                <p>Click on Choose File at the top of this page and select your opacconfig JSON file. In my case it is opac5.json</p>
+                <p>When you see, "Files created successfully!" alert on this page check for a folder that has the name of the form testing-2018_12_23_09_27_18_am</p>
+                <p>Inside of this folder you will find all of your HTML, JS and inline CSS files also with a date and time stamp that have been created for you.</p>
+                <p>These files represent the individual "text areas" inside the Discovery Layer. Not all of them, just the most important ones for coding.</p>
+                <p><img src="info.png" alt="File extensions"></p>
+                    <p>If you have a site host running Apache and PHP where you can make changes to the PHP.ini file, then it should run there as well.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+    $(document).ready(function() {
+
+        $('#uploadFile').change(function() {
+            if (this.files[0].name !== undefined) {
+                var fileName = this.files[0].name;
+                var fileSize = this.files[0].size;
+                var fileType = this.files[0].type;
+                var fileName4PHP = fileName.split('.');
+                fileName4PHP = fileName4PHP[0];
+                console.log('FileName : ' + fileName + '\nFileSize : ' + fileSize + ' bytes');
+                console.log('fileName4PHP', fileName4PHP);
+
+
+                $.getJSON(fileName, function(res) {
+                    console.log(res);
+                    console.log(res.userJS.load);
+                    var landing_page = res.layout.maincontent_html;
+                    var header_page = res.layout.header_html;
+                    var footer_page = res.layout.footer_html;
+                    var dataString = { css: res.userCSS, landing: landing_page, header: header_page, logo: res.layout.logo_html, footer: footer_page, oal: res.userJS.load, opc: res.userJS.page, srr: res.userJS.bibResult, bdr: res.userJS.bibDetail };
+
+                    $.post("create_html_js.php", {
+                            data: dataString,
+                            fn: fileName4PHP
+                        },
+                        function(data, status) {
+                            console.log("Data: " + data + "\nStatus: " + status);
+                            if (status === 'success') {
+                                //alert("OK");
+                                $("#succ").show().delay(5000).fadeOut();
+                            } else {
+                                // alert("Not OK");
+                                $("#fail").show().delay(5000).fadeOut();
+                            }
+                        });
+                });
+
+
+            } //if this
+        });
+
+
+    });
+    </script>
+</body>
+</html>
