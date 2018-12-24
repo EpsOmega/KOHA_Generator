@@ -10,7 +10,7 @@ Using XAMPP running on localhost, create a folder called opac2files under htdocs
 
 Place the 3 files index.html, info.png and create_html_js.php inside of the opac2files folder
 
-Copy a opacconfig file to opac2files so you know have 4 files in opac2files folder. Name this opaconfig file something like opac5.json
+Copy a opacconfig file to opac2files so you now have 4 files in opac2files folder. Name this opaconfig file something like opac5.json
 
 I am using the 5 for opac JSON file because I could have others here as well from earlier or later.
 
