@@ -5,6 +5,7 @@ Example: You supply a opac-config.json file and you will get header.html, footer
 Nine unique files in all.
 
 Installation/Configuration
+
 Using XAMPP running on localhost, create a folder called opac2files under htdocs
 
 Place the 3 files index.html, info.png and create_html_js.php inside of the opac2files folder
